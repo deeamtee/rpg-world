@@ -14,5 +14,6 @@ export class DurotarScene extends Phaser.Scene {
         const map = this.make.tilemap({ key: "map" });
         const tileset = map.addTilesetImage(durotarJSON.tilesets[0].name, "tiles", 32, 32);
         const groundLayer = map.createLayer("ground", tileset!, 0, 0);
+        const wallsLayer = map.createLayer("walls", tileset!, 0, 0);
     }
   }

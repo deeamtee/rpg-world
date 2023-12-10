@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-
+import './style.css'
 import { scenes } from './scenes';
 import { isDevelopment, isProduction } from './utils';
 
