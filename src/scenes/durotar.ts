@@ -10,7 +10,7 @@ export class DurotarScene extends Phaser.Scene {
     }
   
     preload() {
-      this.load.image(TILES.DURATOR, "src/assets/durotar.png");
+      this.load.image(TILES.DURATOR, "src/assets/Wasteland_Tiles.webp");
       this.load.tilemapTiledJSON("map", "src/assets/durotar.json");
       this.load.spritesheet(SPRITES.PLAYER, 'src/assets/characters/alliance.png', {
         frameWidth: SIZES.PLAYER.WIDTH,
