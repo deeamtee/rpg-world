@@ -1,14 +1,14 @@
 import Phaser from 'phaser';
 import './style.css'
 import { scenes } from './scenes';
-import { isDevelopment, isProduction } from './utils';
+import { GAME_CONFIG, isDevelopment, isProduction } from './utils';
 
 /**
  * https://photonstorm.github.io/phaser3-docs/Phaser.Types.Core.html#.GameConfig
  */
 new Phaser.Game({
-  width: 800, // 1024
-  height: 600, // 768
+  width: GAME_CONFIG.WIDTH, 
+  height: GAME_CONFIG.HEIGHT,
   title: 'Phaser RPG',
   url: import.meta.env.URL || '',
   version: import.meta.env.VERSION || '0.0.1',
