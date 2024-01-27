@@ -6,6 +6,7 @@ import { Enemy } from '../entities/enemy'
 export class ElwynnForestScene extends Phaser.Scene {
     private player?: Player;
     private boar?: Enemy;
+    private boarSecond?: Enemy;
 
     constructor() {
         super('ElwynnForestScene')
@@ -18,9 +19,9 @@ export class ElwynnForestScene extends Phaser.Scene {
             frameWidth: SIZES.PLAYER.WIDTH,
             frameHeight: SIZES.PLAYER.HEIGHT,
         })
-        this.load.spritesheet(SPRITES.PLAYER.FIGHT, 'src/assets/characters/alliance-fight.png', {
-            frameWidth: 64,
-            frameHeight: 64,
+        this.load.spritesheet(SPRITES.PLAYER.FIGHT, 'src/assets/characters/alliance-fight-small.png', {
+            frameWidth: SIZES.PLAYER.WIDTH,
+            frameHeight: SIZES.PLAYER.HEIGHT,
         })
         this.load.spritesheet(SPRITES.BOAR, 'src/assets/characters/boar.png', {
             frameWidth: SIZES.SCORPION.WIDTH,
@@ -34,10 +35,12 @@ export class ElwynnForestScene extends Phaser.Scene {
         const groundLayer = map.createLayer('ground', tileset!, 0, 0)
         const wallsLayer = map.createLayer('walls', tileset!, 0, 0)
 
-        this.boar = new Enemy({scene: this, x: 600, y: 400, texture: SPRITES.BOAR });
-        this.player = new Player({scene: this, x: 400, y: 250, texture: SPRITES.PLAYER.BASE, textures: { fight: SPRITES.PLAYER.FIGHT}})
+        this.boar = new Enemy({scene: this, x: 600, y: 400, textures: {base: SPRITES.BOAR} });
+        this.boarSecond = new Enemy({scene: this, x: 200, y: 300, textures: {base: SPRITES.BOAR} });
+        this.player = new Player({scene: this, x: 400, y: 250, textures: { fight: SPRITES.PLAYER.FIGHT, base: SPRITES.PLAYER.BASE}})
         this.boar.setPlayer(this.player);
-        this.player.setEnemies([this.boar]);
+        this.boarSecond.setPlayer(this.player);
+        this.player.setEnemies([this.boar, this.boarSecond]);
         // Настройка камеры
         this.cameras.main.setBounds(0, 0, GAME_CONFIG.MAP_WIDTH, GAME_CONFIG.MAP_HEIGHT)
         this.cameras.main.startFollow(this.player)
@@ -53,5 +56,6 @@ export class ElwynnForestScene extends Phaser.Scene {
     update(time, delta) {
         this.player.update(time, delta)
         this.boar.update()
+        this.boarSecond.update()
     }
 }

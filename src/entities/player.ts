@@ -2,83 +2,83 @@ import { SPRITES } from '../utils'
 import { Entity, IEntity } from './entity'
 
 export class Player extends Entity {
-    textureKey: string
     target: Entity | null
     enemies: Entity[]
+    isAtacking: boolean
+    playerHealthBar: Phaser.GameObjects.Graphics;
+    targetHealthBar: Phaser.GameObjects.Graphics;
 
-    constructor({ scene, x, y, texture, textures }: IEntity) {
-        super({ scene, x, y, texture, type: SPRITES.PLAYER.TYPE })
+    constructor({ scene, x, y, textures }: IEntity) {
+        super({ scene, x, y, textures, type: SPRITES.PLAYER.TYPE })
 
         this.scene = scene
         const anims = scene.anims
         const animFrameRate = 9
-        this.textureKey = texture
         this.enemies = []
 
         this.setSize(28, 32)
         this.setOffset(10, 16)
 
-        anims.create({
-            key: 'down',
-            frames: anims.generateFrameNumbers(this.textureKey, {
-                start: 0,
-                end: 2,
-            }),
-            frameRate: animFrameRate,
-            repeat: -1,
-        })
-        anims.create({
-            key: 'left',
-            frames: anims.generateFrameNumbers(this.textureKey, {
-                start: 12,
-                end: 14,
-            }),
-            frameRate: animFrameRate,
-            repeat: -1,
+        this.createAnimation('down', textures.base, 0, 2, anims, animFrameRate)
+        this.createAnimation('left', textures.base, 12, 14, anims, animFrameRate)
+        this.createAnimation('right', textures.base, 24, 26, anims, animFrameRate)
+        this.createAnimation('up', textures.base, 36, 38, anims, animFrameRate)
+        this.createAnimation('fight', textures.fight, 3, 6, anims, animFrameRate, 0)
+
+        this.setupKeysListeners()
+
+        this.on('animationcomplete', () => {
+            this.isAtacking = false
         })
 
-        anims.create({
-            key: 'right',
-            frames: anims.generateFrameNumbers(this.textureKey, {
-                start: 24,
-                end: 26,
-            }),
-            frameRate: animFrameRate,
-            repeat: -1,
-        })
+        this.drawPlayerHealthBar()
+    }
 
+    private createAnimation(
+        key: string,
+        textureKey: string,
+        start: number,
+        end: number,
+        anims: Phaser.Animations.AnimationManager,
+        frameRate: number,
+        repeat: number = -1
+    ) {
         anims.create({
-            key: 'up',
-            frames: anims.generateFrameNumbers(this.textureKey, {
-                start: 36,
-                end: 38,
-            }),
-            frameRate: animFrameRate,
-            repeat: -1,
-        })
-
-        anims.create({
-            key: 'fight',
-            frames: anims.generateFrameNumbers(textures.fight, {
-                start: 3,
-                end: 6,
-            }),
-            frameRate: animFrameRate,
-            repeat: -1,
+            key,
+            frames: anims.generateFrameNumbers(textureKey, { start, end }),
+            frameRate,
+            repeat,
         })
     }
 
-    findTarget(enemies) {
-        if (this.target) {
-            return this.target
-        }
+    private setupKeysListeners() {
+        this.scene.input.keyboard.on('keydown-SPACE', () => {
+            this.isAtacking = true
+            const target = this.findTarget(this.enemies)
+            this.play('fight', true)
+            this.setVelocity(0, 0)
+            this.attack(target)
+            this.drawTargetHealthBar(target)
+        })
 
+        this.scene.input.keyboard.on('keydown-TAB', (e) => {
+            e.preventDefault()
+            const target = this.findTarget(this.enemies)
+            if (target) {
+                this.drawTargetHealthBar(target)
+            } else {
+                this.targetHealthBar.clear();
+            }
+        })
+    }
+
+    private findTarget(enemies) {
         let target = null
         let minDistance = Infinity
         for (const enemy of enemies) {
             const distanceToEnemy = Phaser.Math.Distance.Between(this.x, this.y, enemy.x, enemy.y)
             if (distanceToEnemy < minDistance) {
-                Math.min(distanceToEnemy, minDistance)
+                minDistance = Math.min(distanceToEnemy, minDistance)
                 target = enemy
             }
         }
@@ -94,33 +94,33 @@ export class Player extends Entity {
         const distanceToEnemy = Phaser.Math.Distance.Between(this.x, this.y, target.x, target.y)
 
         if (distanceToEnemy > 50) return
-        const time = Math.floor(this.scene.game.loop.time)
-        // частота нанесения урона
-        if (time % 1000 <= 3) {
-            target.takeDamage(30)
-        }
+        target.takeDamage(25)
+    }
+
+    private drawPlayerHealthBar() {
+        this.playerHealthBar = this.scene.add.graphics();
+        this.playerHealthBar.setScrollFactor(0)
+        this.drawHealthBar(this.playerHealthBar, 10, 10, this.health / this.maxHealth)
+    }
+    private drawTargetHealthBar(target) {
+        this.targetHealthBar = this.scene.add.graphics()
+        this.targetHealthBar.setScrollFactor(0)
+        this.drawHealthBar(this.targetHealthBar, 10, 30, target.health / target.maxHealth)
+    }
+
+    private drawHealthBar(graphics, x, y, percentage) {
+        graphics.fillStyle(0x000000, 1)
+        graphics.fillRect(x, y, 100, 10)
+
+        graphics.fillStyle(0x00ff00, 1)
+        graphics.fillRect(x, y, 100 * percentage, 10)
     }
 
     update(_, delta) {
-        // const delta = this.scene.game.loop.delta;
-
         const cursors = this.scene.input.keyboard.createCursorKeys()
         this.resetFlip()
-        
-        if (cursors.space.isDown) {
-            this.play('fight', true)
-
-            const target = this.findTarget(this.enemies)
-            const direction = Phaser.Math.Angle.Between(this.x, this.y, target.x, target.y)
-            if (Math.abs(direction) > 2) {
-                this.setFlipX(false)
-            } else {
-                this.setFlipX(true)
-            }
-
-            this.setVelocity(0, 0)
-            this.attack(target)
-        } else if (cursors.up.isDown) {
+        this.drawPlayerHealthBar();
+        if (cursors.up.isDown) {
             this.play('up', true)
             this.setVelocity(0, -delta * 40)
         } else if (cursors.down.isDown) {
@@ -132,6 +132,8 @@ export class Player extends Entity {
         } else if (cursors.right.isDown) {
             this.play('right', true)
             this.setVelocity(delta * 40, 0)
+        } else if (this.isAtacking) {
+            this.setVelocity(0, 0)
         } else {
             this.setVelocity(0, 0)
             this.stop()

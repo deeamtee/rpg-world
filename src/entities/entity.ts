@@ -2,17 +2,17 @@ export interface IEntity {
     scene: Phaser.Scene
     x: number;
     y: number;
-    texture: string;
-    textures?: { fight?: string };
+    textures?: { fight?: string, base: string };
     type?: string;
 }
 
 export class Entity extends Phaser.Physics.Arcade.Sprite {
     health: number
+    maxHealth: number;
 
     constructor(config: IEntity) {
-        const { scene, x, y, texture, type } = config;
-        super(scene, x, y, texture)
+        const { scene, x, y, textures, type } = config;
+        super(scene, x, y, textures.base)
 
         this.scene = scene
         this.type = type
@@ -20,7 +20,8 @@ export class Entity extends Phaser.Physics.Arcade.Sprite {
         this.scene.add.existing(this)
 
         // добавление жизни
-        this.health = 100
+        this.health = 100;
+        this.maxHealth = 100;
     }
 
     takeDamage(damage: number) {

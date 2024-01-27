@@ -4,7 +4,6 @@ import { Player } from './player'
 type Position = { x: number; y: number };
 
 export class Enemy extends Entity {
-    isAttacking: boolean;
     moveSpeed: number;
     direction: number;
     agroDistance: number;
@@ -19,26 +18,21 @@ export class Enemy extends Entity {
     attackRange: number;
     isAlive: boolean;
 
-    constructor({ scene, x, y, texture, type }: IEntity) {
-        super({ scene, x, y, texture, type })
+    constructor({ scene, x, y, textures, type }: IEntity) {
+        super({ scene, x, y, textures, type })
 
         this.scene = scene
-        this.x = x
-        this.y = y
 
         this.moveSpeed = 100
         this.agroDistance = 100
-
         this.isAlive = true;
-
         this.initialPosition = { x, y }
         this.attackRange = 40
         this.targetX = x + 100
         this.followRange = 250
-
         this.isFollowing = false
         this.attackDamage = 10
-        
+
         this.setFlipX(true)
         this.cycleTween()
     }
@@ -98,7 +92,7 @@ export class Enemy extends Entity {
     }
 
     stopCycleTween() {
-        this.scene.tweens.killTweensOf(this)
+        this.scene?.tweens.killTweensOf(this)
     }
 
     update() {
@@ -130,7 +124,7 @@ export class Enemy extends Entity {
             }
         }
     }
-    attack(target) {
+    attack(target: Entity) {
         const time = Math.floor(this.scene.game.loop.time)
         if (time % 2000 <= 3) {
             target.takeDamage(this.attackDamage)
@@ -142,12 +136,14 @@ export class Enemy extends Entity {
         this.setPosition(this.initialPosition.x, this.initialPosition.y)
         this.setVisible(false)
         this.isAlive = false;
+        this.destroy()
     }
 
     takeDamage(damage: number) {
         super.takeDamage(damage)
 
-        if (this.health < 0) {
+        if (this.health <= 0) {
+            
             this.deactivate()
         }
     }
