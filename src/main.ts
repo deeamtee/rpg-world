@@ -16,7 +16,7 @@ new Phaser.Game({
   physics: {
     default: 'arcade',
     arcade: {
-      debug: isDevelopment,
+      debug: false && isDevelopment,
     },
   },
   disableContextMenu: isProduction,

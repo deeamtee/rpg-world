@@ -1,4 +1,5 @@
 import { SPRITES } from '../utils'
+import socket from '../utils/socket'
 import { Entity, IEntity } from './entity'
 
 export class Player extends Entity {
@@ -7,6 +8,7 @@ export class Player extends Entity {
     isAtacking: boolean
     playerHealthBar: Phaser.GameObjects.Graphics;
     targetHealthBar: Phaser.GameObjects.Graphics;
+    moveSpeed: number;
 
     constructor({ scene, x, y, textures }: IEntity) {
         super({ scene, x, y, textures, type: SPRITES.PLAYER.TYPE })
@@ -15,9 +17,11 @@ export class Player extends Entity {
         const anims = scene.anims
         const animFrameRate = 9
         this.enemies = []
+        this.moveSpeed = 50;
 
         this.setSize(28, 32)
         this.setOffset(10, 16)
+        this.setScale(0.8)
 
         this.createAnimation('down', textures.base, 0, 2, anims, animFrameRate)
         this.createAnimation('left', textures.base, 12, 14, anims, animFrameRate)
@@ -29,26 +33,10 @@ export class Player extends Entity {
 
         this.on('animationcomplete', () => {
             this.isAtacking = false
+            this.stop()
         })
 
         this.drawPlayerHealthBar()
-    }
-
-    private createAnimation(
-        key: string,
-        textureKey: string,
-        start: number,
-        end: number,
-        anims: Phaser.Animations.AnimationManager,
-        frameRate: number,
-        repeat: number = -1
-    ) {
-        anims.create({
-            key,
-            frames: anims.generateFrameNumbers(textureKey, { start, end }),
-            frameRate,
-            repeat,
-        })
     }
 
     private setupKeysListeners() {
@@ -116,22 +104,28 @@ export class Player extends Entity {
         graphics.fillRect(x, y, 100 * percentage, 10)
     }
 
-    update(_, delta) {
+    update() {
         const cursors = this.scene.input.keyboard.createCursorKeys()
+        const delta = this.scene.game.loop.delta;
+
         this.resetFlip()
         this.drawPlayerHealthBar();
         if (cursors.up.isDown) {
             this.play('up', true)
-            this.setVelocity(0, -delta * 40)
+            this.setVelocity(0, -delta * this.moveSpeed)
+            socket.emit('playerMove', { x:  this.x, y:  this.y });
         } else if (cursors.down.isDown) {
             this.play('down', true)
-            this.setVelocity(0, delta * 40)
+            this.setVelocity(0, delta * this.moveSpeed)
+            socket.emit('playerMove', { x:  this.x, y:  this.y });
         } else if (cursors.left.isDown) {
             this.play('left', true)
-            this.setVelocity(-delta * 40, 0)
+            this.setVelocity(-delta * this.moveSpeed, 0)
+            socket.emit('playerMove', { x:  this.x, y:  this.y });
         } else if (cursors.right.isDown) {
             this.play('right', true)
-            this.setVelocity(delta * 40, 0)
+            this.setVelocity(delta * this.moveSpeed, 0)
+            socket.emit('playerMove', { x:  this.x, y:  this.y });
         } else if (this.isAtacking) {
             this.setVelocity(0, 0)
         } else {

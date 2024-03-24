@@ -1,3 +1,4 @@
+import { ElwynnForestScene } from '../scenes/elwynn-forest';
 import { Entity, IEntity } from './entity'
 import { Player } from './player'
 
@@ -21,14 +22,14 @@ export class Enemy extends Entity {
     constructor({ scene, x, y, textures, type }: IEntity) {
         super({ scene, x, y, textures, type })
 
-        this.scene = scene
+        this.scene = scene;
 
         this.moveSpeed = 100
         this.agroDistance = 100
         this.isAlive = true;
         this.initialPosition = { x, y }
-        this.attackRange = 40
         this.targetX = x + 100
+        this.attackRange = 40
         this.followRange = 250
         this.isFollowing = false
         this.attackDamage = 10
@@ -132,6 +133,11 @@ export class Enemy extends Entity {
     }
 
     deactivate() {
+        const scene = this.scene as ElwynnForestScene;
+        if (scene) {
+            scene.killsCounter += 1;
+        }
+        
         this.stopCycleTween();
         this.setPosition(this.initialPosition.x, this.initialPosition.y)
         this.setVisible(false)

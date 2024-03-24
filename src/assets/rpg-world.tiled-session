@@ -3,14 +3,14 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "durotar.json",
+    "activeFile": "elwynn.json",
     "expandedProjectPaths": [
         "."
     ],
     "file.lastUsedOpenFilter": "Все файлы (*)",
     "fileStates": {
         "": {
-            "scaleInDock": 2
+            "scaleInDock": 1
         },
         "#A_Dungeon_A1_mvt": {
             "scaleInDock": 1
@@ -74,12 +74,23 @@
             "scaleInDock": 1,
             "scaleInEditor": 1
         },
+        "dungeon.json": {
+            "scale": 2.0068749999999995,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 325.63064465898486,
+                "y": 181.12737464964192
+            }
+        },
+        "dungeon.json#tiles-dungeon": {
+            "scaleInDock": 1
+        },
         "durotar.json": {
-            "scale": 2,
+            "scale": 1,
             "selectedLayer": 1,
             "viewCenter": {
-                "x": 352.25,
-                "y": 154.25
+                "x": 186.5,
+                "y": 652.5
             }
         },
         "durotar.json#D_Inside_C_mvt": {
@@ -114,6 +125,20 @@
         "elvin.json#Summer_Tiles": {
             "scaleInDock": 2,
             "scaleInEditor": 1
+        },
+        "elwynn.json": {
+            "scale": 1,
+            "selectedLayer": 2,
+            "viewCenter": {
+                "x": 894.5,
+                "y": 474.5
+            }
+        },
+        "elwynn.json#Summer_Tiles": {
+            "scaleInDock": 1.5
+        },
+        "elwynn.json#durotar": {
+            "scaleInDock": 1
         },
         "forest.json": {
             "scale": 1.5,
@@ -168,21 +193,20 @@
     "map.tileWidth": 32,
     "map.width": 30,
     "openFiles": [
-        "durotar.json",
-        "forest.json",
-        "elvin-forest.json"
+        "elwynn.json"
     ],
     "project": "rpg-world.tiled-project",
     "recentFiles": [
+        "durotar.json",
+        "elwynn.json",
         "elvin-forest.json",
-        "forest.json",
-        "durotar.json"
+        "forest.json"
     ],
     "tileset.embedInMap": true,
     "tileset.margin": 0,
     "tileset.spacing": 0,
     "tileset.tileSize": {
-        "height": 8,
-        "width": 8
+        "height": 32,
+        "width": 32
     }
 }

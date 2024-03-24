@@ -29,5 +29,22 @@ export class Entity extends Phaser.Physics.Arcade.Sprite {
             this.health -= damage;
         }
     }
+
+    protected createAnimation(
+        key: string,
+        textureKey: string,
+        start: number,
+        end: number,
+        anims: Phaser.Animations.AnimationManager,
+        frameRate: number,
+        repeat: number = -1
+    ) {
+        anims.create({
+            key,
+            frames: anims.generateFrameNumbers(textureKey, { start, end }),
+            frameRate,
+            repeat,
+        })
+    }
     
 }
