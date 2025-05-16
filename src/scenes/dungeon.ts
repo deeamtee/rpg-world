@@ -1,6 +1,6 @@
 import { Player } from '../entities/player'
 import { Portal } from '../entities/portal'
-import { GAME_CONFIG, SIZES, SPRITES, TILEMAP_KEYS, TILES } from '../utils'
+import { SIZES, SPRITES, TILEMAP_KEYS, TILES } from '../utils'
 import dungeon from '@assets/dungeon.json'
 
 export class Dungeon extends Phaser.Scene {
