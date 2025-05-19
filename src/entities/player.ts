@@ -6,18 +6,20 @@ export class Player extends Entity {
     target: Entity | null
     enemies: Entity[]
     isAtacking: boolean
-    playerHealthBar: Phaser.GameObjects.Graphics;
-    targetHealthBar: Phaser.GameObjects.Graphics;
-    moveSpeed: number;
+    playerHealthBar: Phaser.GameObjects.Graphics
+    targetHealthBar: Phaser.GameObjects.Graphics
+    moveSpeed: number
+    isRemote: boolean
 
-    constructor({ scene, x, y, textures }: IEntity) {
+    constructor({ scene, x, y, textures, isRemote = false }: IEntity & { isRemote?: boolean }) {
         super({ scene, x, y, textures, type: SPRITES.PLAYER.TYPE })
+        this.isRemote = isRemote
 
         this.scene = scene
         const anims = scene.anims
         const animFrameRate = 9
         this.enemies = []
-        this.moveSpeed = 50;
+        this.moveSpeed = 50
 
         this.setSize(28, 32)
         this.setOffset(10, 16)
@@ -29,7 +31,9 @@ export class Player extends Entity {
         this.createAnimation('up', textures.base, 36, 38, anims, animFrameRate)
         this.createAnimation('fight', textures.fight, 3, 6, anims, animFrameRate, 0)
 
-        this.setupKeysListeners()
+        if (!this.isRemote) {
+            this.setupKeysListeners()
+        }
 
         this.on('animationcomplete', () => {
             this.isAtacking = false
@@ -55,7 +59,7 @@ export class Player extends Entity {
             if (target) {
                 this.drawTargetHealthBar(target)
             } else {
-                this.targetHealthBar.clear();
+                this.targetHealthBar.clear()
             }
         })
     }
@@ -86,7 +90,7 @@ export class Player extends Entity {
     }
 
     private drawPlayerHealthBar() {
-        this.playerHealthBar = this.scene.add.graphics();
+        this.playerHealthBar = this.scene.add.graphics()
         this.playerHealthBar.setScrollFactor(0)
         this.drawHealthBar(this.playerHealthBar, 10, 10, this.health / this.maxHealth)
     }
@@ -105,27 +109,28 @@ export class Player extends Entity {
     }
 
     update() {
+        if (this.isRemote) return
         const cursors = this.scene.input.keyboard.createCursorKeys()
-        const delta = this.scene.game.loop.delta;
+        const delta = this.scene.game.loop.delta
 
         this.resetFlip()
-        this.drawPlayerHealthBar();
+        this.drawPlayerHealthBar()
         if (cursors.up.isDown) {
             this.play('up', true)
             this.setVelocity(0, -delta * this.moveSpeed)
-            socket.emit('playerMove', { x:  this.x, y:  this.y });
+            socket.emit('playerMove', { x: this.x, y: this.y })
         } else if (cursors.down.isDown) {
             this.play('down', true)
             this.setVelocity(0, delta * this.moveSpeed)
-            socket.emit('playerMove', { x:  this.x, y:  this.y });
+            socket.emit('playerMove', { x: this.x, y: this.y })
         } else if (cursors.left.isDown) {
             this.play('left', true)
             this.setVelocity(-delta * this.moveSpeed, 0)
-            socket.emit('playerMove', { x:  this.x, y:  this.y });
+            socket.emit('playerMove', { x: this.x, y: this.y })
         } else if (cursors.right.isDown) {
             this.play('right', true)
             this.setVelocity(delta * this.moveSpeed, 0)
-            socket.emit('playerMove', { x:  this.x, y:  this.y });
+            socket.emit('playerMove', { x: this.x, y: this.y })
         } else if (this.isAtacking) {
             this.setVelocity(0, 0)
         } else {
