@@ -88,8 +88,12 @@ export class ElwynnForestScene extends Phaser.Scene {
         })
 
         socket.on('currentPlayers', (players) => {
+            // Очищаем старых других игроков
+            Object.values(this.otherPlayers).forEach(p => p.destroy());
+            this.otherPlayers = {};
+            // Добавляем новых других игроков
             players.forEach((playerData) => {
-                if (playerData.id !== socket.id && !this.otherPlayers[playerData.id]) {
+                if (playerData.id !== socket.id) {
                     this.addOtherPlayer(playerData)
                 }
             })
@@ -138,6 +142,8 @@ export class ElwynnForestScene extends Phaser.Scene {
 
         const portal = new Portal({ scene: this, x: 210, y: 205, textures: { base: SPRITES.PORTAL.BASE } })
         this.physics.add.collider(this.player, portal, () => {
+            // Сообщаем серверу о смене сцены
+            socket.emit('changeScene', 'Dungeon');
             this.scene.stop()
             this.scene.add('Dungeon', Dungeon, true)
         })
