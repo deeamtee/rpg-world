@@ -108,6 +108,21 @@ export class Player extends Entity {
         graphics.fillRect(x, y, 100 * percentage, 10)
     }
 
+    /**
+     * Устанавливает кадр персонажа по направлению (без анимации)
+     */
+    setDirectionFrame(direction: 'up' | 'down' | 'left' | 'right') {
+        // Кадры для направлений должны совпадать с createAnimation
+        const frameMap = {
+            down: 1,   // средний кадр анимации вниз
+            left: 13,  // средний кадр анимации влево
+            right: 25, // средний кадр анимации вправо
+            up: 37,    // средний кадр анимации вверх
+        };
+        const frame = frameMap[direction] ?? 1;
+        this.setFrame(frame);
+    }
+
     update() {
         if (this.isRemote) return
         const cursors = this.scene.input.keyboard.createCursorKeys()

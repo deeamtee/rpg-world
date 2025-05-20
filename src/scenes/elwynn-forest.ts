@@ -30,14 +30,35 @@ export class ElwynnForestScene extends BaseScene {
         });
         otherPlayer.setTint(0x00bfff);
         otherPlayer.setDepth(1);
+        let lastX = playerData.x;
+        let lastY = playerData.y;
+        let lastDirection = '';
         return {
             id: playerData.id,
             x: playerData.x,
             y: playerData.y,
             destroy: () => otherPlayer.destroy(),
             setPosition: (x: number, y: number) => {
+                // Определяем направление движения
+                const dx = x - lastX;
+                const dy = y - lastY;
+                let direction = lastDirection;
+                if (dx !== 0 || dy !== 0) {
+                    if (Math.abs(dx) > Math.abs(dy)) {
+                        direction = dx > 0 ? 'right' : 'left';
+                    } else {
+                        direction = dy > 0 ? 'down' : 'up';
+                    }
+                    // Устанавливаем кадр/направление без анимации
+                    if (direction !== lastDirection) {
+                        otherPlayer.setDirectionFrame?.(direction as 'up' | 'down' | 'left' | 'right');
+                        lastDirection = direction;
+                    }
+                }
                 otherPlayer.x = x;
                 otherPlayer.y = y;
+                lastX = x;
+                lastY = y;
             },
         };
     };
