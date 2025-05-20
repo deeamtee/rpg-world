@@ -2,8 +2,9 @@ import { Player } from '../entities/player'
 import { Portal } from '../entities/portal'
 import { SIZES, SPRITES, TILEMAP_KEYS, TILES } from '../utils'
 import dungeon from '@assets/dungeon.json'
+import { BaseScene } from './base-scene'
 
-export class Dungeon extends Phaser.Scene {
+export class Dungeon extends BaseScene {
     player: Player
     constructor() {
         super('Dungeon')
