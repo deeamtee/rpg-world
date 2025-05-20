@@ -147,7 +147,7 @@ export class ElwynnForestScene extends BaseScene {
         this.killsText.setScrollFactor(0)
     }
 
-    update() {
+    updateScene() {
         this.killsText.setText(`${this.killsCounter}`);
         this.player.update();
         this.emitPlayerMove(() => ({ x: this.player.x, y: this.player.y }));

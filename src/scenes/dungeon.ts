@@ -64,7 +64,7 @@ export class Dungeon extends BaseScene {
 
     }
 
-    update() {
+    updateScene() {
         this.player.update()
     }
 }
