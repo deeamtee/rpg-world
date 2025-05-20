@@ -6,25 +6,22 @@ export class Player extends Entity {
     target: Entity | null
     enemies: Entity[]
     isAtacking: boolean
-    playerHealthBar: Phaser.GameObjects.Graphics
-    targetHealthBar: Phaser.GameObjects.Graphics
+    playerHealthBar: Phaser.GameObjects.Graphics;
+    targetHealthBar?: Phaser.GameObjects.Graphics;
     moveSpeed: number
     isRemote: boolean
 
     constructor({ scene, x, y, textures, isRemote = false }: IEntity & { isRemote?: boolean }) {
         super({ scene, x, y, textures, type: SPRITES.PLAYER.TYPE })
         this.isRemote = isRemote
-
         this.scene = scene
         const anims = scene.anims
         const animFrameRate = 9
         this.enemies = []
         this.moveSpeed = 50
-
         this.setSize(28, 32)
         this.setOffset(10, 16)
         this.setScale(0.8)
-
         this.createAnimation('down', textures.base, 0, 2, anims, animFrameRate)
         this.createAnimation('left', textures.base, 12, 14, anims, animFrameRate)
         this.createAnimation('right', textures.base, 24, 26, anims, animFrameRate)
@@ -40,7 +37,10 @@ export class Player extends Entity {
             this.stop()
         })
 
-        this.drawPlayerHealthBar()
+        // Создаем графику только один раз
+        this.playerHealthBar = this.scene.add.graphics()
+        this.playerHealthBar.setScrollFactor(0)
+        // Не вызываем drawPlayerHealthBar здесь, только инициализация
     }
 
     private setupKeysListeners() {
@@ -90,14 +90,16 @@ export class Player extends Entity {
     }
 
     private drawPlayerHealthBar() {
-        this.playerHealthBar = this.scene.add.graphics()
-        this.playerHealthBar.setScrollFactor(0)
-        this.drawHealthBar(this.playerHealthBar, 10, 10, this.health / this.maxHealth)
+        this.playerHealthBar.clear();
+        this.drawHealthBar(this.playerHealthBar, 10, 10, this.health / this.maxHealth);
     }
     private drawTargetHealthBar(target) {
-        this.targetHealthBar = this.scene.add.graphics()
-        this.targetHealthBar.setScrollFactor(0)
-        this.drawHealthBar(this.targetHealthBar, 10, 30, target.health / target.maxHealth)
+        if (!this.targetHealthBar) {
+            this.targetHealthBar = this.scene.add.graphics();
+            this.targetHealthBar.setScrollFactor(0);
+        }
+        this.targetHealthBar.clear();
+        this.drawHealthBar(this.targetHealthBar, 10, 30, target.health / target.maxHealth);
     }
 
     private drawHealthBar(graphics, x, y, percentage) {
@@ -129,6 +131,7 @@ export class Player extends Entity {
         const delta = this.scene.game.loop.delta
 
         this.resetFlip()
+        // Только обновляем графику, не пересоздаем
         this.drawPlayerHealthBar()
         if (cursors.up.isDown) {
             this.play('up', true)
