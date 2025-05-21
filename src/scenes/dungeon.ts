@@ -11,8 +11,6 @@ export class Dungeon extends BaseScene {
     }
 
     preload() {
-        console.log('load')
-
         this.load.spritesheet(SPRITES.PLAYER.BASE, 'src/assets/characters/alliance.png', {
             frameWidth: SIZES.PLAYER.WIDTH,
             frameHeight: SIZES.PLAYER.HEIGHT,
@@ -29,7 +27,6 @@ export class Dungeon extends BaseScene {
     }
 
     create() {
-        console.log('create')
         const map = this.make.tilemap({ key: TILEMAP_KEYS.DUNGEON })
         const tilesetDungeon = map.addTilesetImage(dungeon.tilesets[0].name, TILES.DUNGEON, SIZES.TILE, SIZES.TILE)
 
